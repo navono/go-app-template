@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"go-app-template/internal/config"
 	"net/http"
+
+	"go.uber.org/zap"
 
 	"github.com/go-kit/kit/endpoint"
 )
@@ -33,8 +34,7 @@ var (
 )
 
 // 这里可以引入各种依赖
-func NewHelloService(fileConfig *config.FileConfig) *HelloService {
-	fmt.Println(fileConfig)
+func NewHelloService(log *zap.Logger) *HelloService {
 	return &HelloService{}
 }
 

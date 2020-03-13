@@ -68,7 +68,7 @@ func TestLoggerFactory_LoggerInvalidLogger(t *testing.T) {
 	}
 
 	invokeFunc := func(cfg *viper.Viper) {
-		_, err := logging.NewLoggerFactory().Logger(cfg)
+		_, err := logging.NewLoggerFactory(nil).Logger(cfg)
 		if err == nil {
 			t.Fatal("expected an error, got nil")
 		}
@@ -100,7 +100,7 @@ func TestLoggerFactory_LoggerFailingConstructor(t *testing.T) {
 	}
 
 	invokeFunc := func(cfg *viper.Viper) {
-		factory := logging.NewLoggerFactory()
+		factory := logging.NewLoggerFactory(nil)
 		factory.LoggerConstructors["failure"] = func(options ...zap.Option) (logger *zap.Logger, err error) {
 			return nil, errors.New("failure")
 		}

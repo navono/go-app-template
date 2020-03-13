@@ -1,1 +1,11 @@
-test: "a"
+
+log:
+  enableFile: true
+  fileLevel: "debug"
+  filename: "./log/go-app.log"
+  skip: 0
+  # MB
+  fileMaxSize: 5
+  # days
+  fileMaxAge: 3
+  compress: true

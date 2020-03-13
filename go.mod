@@ -14,4 +14,5 @@ require (
 	go.uber.org/atomic v1.5.0
 	go.uber.org/fx v1.10.0
 	go.uber.org/zap v1.14.0
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

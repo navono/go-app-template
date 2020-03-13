@@ -74,10 +74,11 @@ func ConfigureViper(config Viper, cmd *cobra.Command, replacer *strings.Replacer
 
 func NewFileConfig(cmd *cobra.Command, config *viper.Viper) (*FileConfig, error) {
 	configFlag := cmd.PersistentFlags().Lookup("config")
-	if configFlag.Value.String() != "" {
-		config.SetConfigFile(configFlag.Value.String())
+	if configFlag.Value.String() == "" {
+		return nil, fmt.Errorf("no configuration file path specified")
 	}
 
+	config.SetConfigFile(configFlag.Value.String())
 	if err := config.ReadInConfig(); err != nil {
 		return nil, fmt.Errorf("failed to read config file with error (%w)", err)
 	}
