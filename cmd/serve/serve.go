@@ -12,6 +12,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	configFile string
+)
+
 // NewCommand creates an instance of the Serve command
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
@@ -19,6 +23,9 @@ func NewCommand() *cobra.Command {
 		Short: "Start the web-http",
 		Long:  "Start the example web-sever",
 	}
+
+	cmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "Config file path")
+
 	cmd.Run = Serve(newWebApplicationBuilder(cmd))
 	return cmd
 }

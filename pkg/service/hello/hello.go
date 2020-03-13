@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"go-app-template/internal/config"
 	"net/http"
 
 	"github.com/go-kit/kit/endpoint"
 )
 
 type (
-	HelloService interface {
+	ServiceInterface interface {
 		Hello(string) (string, error)
 	}
 
@@ -24,7 +25,7 @@ type (
 		Err string `json:"err,omitempty"`
 	}
 
-	HelloHandler struct{}
+	HelloService struct{}
 )
 
 var (
@@ -32,11 +33,12 @@ var (
 )
 
 // 这里可以引入各种依赖
-func NewHelloHandler() *HelloHandler {
-	return &HelloHandler{}
+func NewHelloService(fileConfig *config.FileConfig) *HelloService {
+	fmt.Println(fileConfig)
+	return &HelloService{}
 }
 
-func (h *HelloHandler) Hello(s string) (string, error) {
+func (h *HelloService) Hello(s string) (string, error) {
 	if s == "" {
 		return "", ErrEmpty
 	}
@@ -44,7 +46,7 @@ func (h *HelloHandler) Hello(s string) (string, error) {
 	return fmt.Sprintf("Hello %s", s), nil
 }
 
-func makeHelloEndpoint(svc HelloService) endpoint.Endpoint {
+func makeHelloEndpoint(svc ServiceInterface) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(helloRequest)
 		v, err := svc.Hello(req.S)

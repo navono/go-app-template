@@ -9,7 +9,7 @@ import (
 )
 
 var Module = fx.Provide(
-	NewHelloHandler,
+	NewHelloService,
 	fx.Annotated{
 		Group:  "http",
 		Target: RegisterHandler,
@@ -19,18 +19,15 @@ var Module = fx.Provide(
 type HandlerParams struct {
 	fx.In
 
-	HelloHandler *HelloHandler
+	HelloService *HelloService
 }
 
 func RegisterHandler(params HandlerParams) router.Module {
 	return router.Module{
 		Path: "hello",
 		Router: func(router *mux.Router) {
-			//router.Handle("/", params.HelloHandler.Get)
-			//router.HandleFunc("/", params.HelloHandler.Get2)
-
 			router.Handle("/", kitHttp.NewServer(
-				makeHelloEndpoint(params.HelloHandler),
+				makeHelloEndpoint(params.HelloService),
 				decodeHelloRequest,
 				encodeResponse))
 		},

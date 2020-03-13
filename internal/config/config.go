@@ -17,6 +17,7 @@ import (
 var Service = dependency.Service{
 	Dependencies: fx.Provide(
 		NewFactory().Configure,
+		NewFileConfig,
 	),
 	Constructor: func(config *viper.Viper) dependency.ConfigGetter {
 		return config
@@ -29,6 +30,9 @@ type Viper interface {
 	AutomaticEnv()
 	SetEnvKeyReplacer(r *strings.Replacer)
 	BindPFlags(flags *pflag.FlagSet) error
+	//SetConfigFile(in string)
+	//ReadInConfig() error
+	//Unmarshal(rawVal interface{}, opts ...viper.DecoderConfigOption) error
 }
 
 // NewFactory gives a new instance of the Factory type with a string.Replacer
@@ -36,8 +40,7 @@ type Viper interface {
 // sets the ConfigFunc to be ConfigureViper function
 func NewFactory() Factory {
 	return Factory{
-		Replacer: strings.NewReplacer("-", "_",
-			".", "_"),
+		Replacer:   strings.NewReplacer("-", "_", ".", "_"),
 		ConfigFunc: ConfigureViper,
 	}
 }
@@ -65,5 +68,24 @@ func ConfigureViper(config Viper, cmd *cobra.Command, replacer *strings.Replacer
 	if err := config.BindPFlags(cmd.Flags()); err != nil {
 		return fmt.Errorf("failed to bind command flags with error (%w)", err)
 	}
+
 	return nil
+}
+
+func NewFileConfig(cmd *cobra.Command, config *viper.Viper) (*FileConfig, error) {
+	configFlag := cmd.PersistentFlags().Lookup("config")
+	if configFlag.Value.String() != "" {
+		config.SetConfigFile(configFlag.Value.String())
+	}
+
+	if err := config.ReadInConfig(); err != nil {
+		return nil, fmt.Errorf("failed to read config file with error (%w)", err)
+	}
+
+	fileConfig := &FileConfig{}
+	if err := config.Unmarshal(fileConfig); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal config file with error (%w)", err)
+	}
+
+	return fileConfig, nil
 }
