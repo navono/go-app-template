@@ -9,6 +9,7 @@ import (
 	"go-app-template/internal/dependency"
 	"go-app-template/pkg/transport/http/router"
 
+	"github.com/tylerb/graceful"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
@@ -75,7 +76,7 @@ func StartServer(server Server, logger *zap.Logger) func(ctx context.Context) er
 	return func(ctx context.Context) error {
 		logger.Info("Starting HTTP Server")
 		go func() {
-			if err := server.ListenAndServe(); err != nil {
+			if err := graceful.ListenAndServe(server.(*http.Server), 5*time.Second); err != nil {
 				logger.Error("Could not start Server", zap.Error(err))
 			}
 		}()
