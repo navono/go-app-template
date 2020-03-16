@@ -33,24 +33,13 @@ var Service = dependency.Service{
 		set.StringSlice("excluded-headers", []string{"Authorization"}, "Which headers to hide from the request log")
 	},
 	Constructor: func(lf LoggerFactory, settings dependency.ConfigGetter) (*zap.Logger, error) {
-		options := []zap.Option{
-			zap.Fields(
-				zap.String("app-name", settings.GetString("app-name")),
-				zap.String("app-version", settings.GetString("app-version")),
-				zap.String("environment", settings.GetString("environment")),
-			),
-		}
-
-		loggerType := settings.GetString("logger")
-		loggerConstructor, ok := lf.LoggerConstructors[loggerType]
-		if !ok {
-			return nil, fmt.Errorf("the logger type (%s), is not a valid logger", loggerType)
-		}
-
-		logger, err := loggerConstructor(options...)
+		logger, err := lf.Logger(settings)
 		if err != nil {
-			return nil, fmt.Errorf("could not create instance of logger, got error (%w)", err)
+			return nil, err
 		}
+
+		logger.Info("Process environment", zap.String("app-version", settings.GetString("app-version")),
+			zap.Int("pid", os.Getpid()))
 
 		return logger, nil
 	},
