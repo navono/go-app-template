@@ -1,13 +1,10 @@
 package serve
 
 import (
-	"go-app-template/internal/config"
+	"go-app-template/cmd/builder"
 	"go-app-template/internal/dependency"
-	"go-app-template/internal/logging"
 	"go-app-template/internal/middleware"
-	"go-app-template/internal/response"
 	"go-app-template/pkg/service/hello"
-	"go-app-template/pkg/transport/http"
 
 	"github.com/spf13/cobra"
 )
@@ -24,9 +21,9 @@ func NewCommand() *cobra.Command {
 		Long:  "Start the example web-sever",
 	}
 
-	cmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "Config file path")
+	cmd.PersistentFlags().StringVarP(&configFile, "config", "c", "./config.yaml", "Config file path")
 
-	cmd.Run = Serve(newWebApplicationBuilder(cmd))
+	cmd.Run = Serve(builder.NewApplicationBuilder(cmd))
 	return cmd
 }
 
@@ -40,12 +37,4 @@ func Serve(builder dependency.Builder) func(cmd *cobra.Command, args []string) {
 			Build().
 			Run()
 	}
-}
-
-func newWebApplicationBuilder(cmd *cobra.Command) dependency.Builder {
-	return dependency.NewBuilder(cmd).
-		WithService(config.Service).
-		WithService(logging.Service).
-		WithService(response.Service).
-		WithService(http.Service)
 }

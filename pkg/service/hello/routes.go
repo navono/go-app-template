@@ -26,6 +26,7 @@ func RegisterHandler(params HandlerParams) router.Module {
 	return router.Module{
 		Path: "hello",
 		Router: func(router *mux.Router) {
+			// this can be a normal handler instead of kit http
 			router.Handle("/", kitHttp.NewServer(
 				makeHelloEndpoint(params.HelloService),
 				decodeHelloRequest,
