@@ -3,13 +3,12 @@ package hello
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
-	"go.uber.org/zap"
-
 	"github.com/go-kit/kit/endpoint"
+	"github.com/pkg/errors"
+	"go.uber.org/zap"
 )
 
 type (
@@ -26,7 +25,9 @@ type (
 		Err string `json:"err,omitempty"`
 	}
 
-	HelloService struct{}
+	HelloService struct {
+		logger *zap.Logger
+	}
 )
 
 var (
@@ -35,9 +36,18 @@ var (
 
 // 这里可以引入各种依赖
 func NewHelloService(log *zap.Logger) *HelloService {
-	return &HelloService{}
+	return &HelloService{log}
 }
 
+// Hello
+// @Summary Say Hello
+// @Description this is description
+// @Tags hello
+// @Accept  octet-stream
+// @Produce octet-stream
+// @Param   req body string false "string enums"
+// @Success 200 {object} string
+// @Router  /hello [get]
 func (h *HelloService) Hello(s string) (string, error) {
 	if s == "" {
 		return "", ErrEmpty
@@ -63,7 +73,7 @@ func makeHelloEndpoint(svc ServiceInterface) endpoint.Endpoint {
 func decodeHelloRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request helloRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "decodeHelloRequest failed")
 	}
 
 	return request, nil

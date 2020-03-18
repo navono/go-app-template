@@ -1,10 +1,12 @@
 package hello
 
 import (
+	"net/http"
+
 	"go-app-template/pkg/transport/http/router"
 
 	kitHttp "github.com/go-kit/kit/transport/http"
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 )
 
@@ -19,18 +21,19 @@ var Module = fx.Provide(
 type HandlerParams struct {
 	fx.In
 
+	Options      []kitHttp.ServerOption
 	HelloService *HelloService
 }
 
 func RegisterHandler(params HandlerParams) router.Module {
 	return router.Module{
-		Path: "hello",
-		Router: func(router *mux.Router) {
-			// this can be a normal handler instead of kit http
-			router.Handle("/", kitHttp.NewServer(
+		Method: http.MethodGet,
+		Path:   "/hello",
+		HandlerFunc: echo.WrapHandler(
+			kitHttp.NewServer(
 				makeHelloEndpoint(params.HelloService),
 				decodeHelloRequest,
-				encodeResponse))
-		},
+				encodeResponse,
+				params.Options...)),
 	}
 }

@@ -7,5 +7,26 @@ info:
   license: {}
   title: go-app API
   version: "0.1"
-paths: {}
+paths:
+  /hello:
+    get:
+      consumes:
+      - application/octet-stream
+      description: this is description
+      parameters:
+      - description: string enums
+        in: body
+        name: req
+        schema:
+          type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/string'
+      summary: Say Hello
+      tags:
+      - hello
 swagger: "2.0"

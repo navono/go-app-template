@@ -3,6 +3,7 @@ package serve
 import (
 	"go-app-template/cmd/builder"
 	"go-app-template/internal/dependency"
+	"go-app-template/internal/gokitOptions"
 	"go-app-template/internal/middleware"
 	"go-app-template/internal/swag"
 	"go-app-template/pkg/service/hello"
@@ -34,6 +35,7 @@ func Serve(builder dependency.Builder) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
 		builder.
 			WithModule(middleware.Module).
+			WithModule(gokitOptions.Module).
 			WithModule(swag.Module).
 			WithModule(hello.Module).
 			Build().

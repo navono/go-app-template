@@ -69,7 +69,7 @@ func TestInvoke(t *testing.T) {
 		fx.Logger(logger),
 		fx.Provide(
 			zap.NewNop,
-			func() http.Server {
+			func() http.WebServer {
 				return srv
 			},
 		),
@@ -129,7 +129,7 @@ func TestNew(t *testing.T) {
 			http.Service.Constructor,
 		),
 		http.Service.Dependencies,
-		fx.Invoke(func(serverServer http.Server) {
+		fx.Invoke(func(serverServer http.WebServer) {
 			gotServer, ok := serverServer.(*nethttp.Server)
 			if !ok {
 				t.Fatal("cannot convert http to http.Server")

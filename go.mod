@@ -8,10 +8,13 @@ require (
 	github.com/go-kit/kit v0.10.0
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.4
+	github.com/grpc-ecosystem/grpc-gateway v1.9.5
+	github.com/labstack/echo/v4 v4.1.15
+	github.com/pkg/errors v0.8.1
 	github.com/spf13/cobra v0.0.6
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.6.2
-	github.com/swaggo/http-swagger v0.0.0-20200308142732-58ac5e232fba
+	github.com/swaggo/echo-swagger v0.0.0-20200314082325-a612f9386b76
 	github.com/swaggo/swag v1.6.3
 	github.com/tylerb/graceful v1.2.15
 	go.uber.org/atomic v1.5.0

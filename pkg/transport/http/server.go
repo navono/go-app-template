@@ -9,6 +9,8 @@ import (
 	"go-app-template/internal/dependency"
 	"go-app-template/pkg/transport/http/router"
 
+	"github.com/labstack/echo/v4"
+	echoMw "github.com/labstack/echo/v4/middleware"
 	"github.com/tylerb/graceful"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
@@ -26,26 +28,43 @@ var Service = dependency.Service{
 		flags.Int("max-header-bytes", http.DefaultMaxHeaderBytes, "The maximum size that the HTTP header can be in bytes")
 	},
 	Dependencies: fx.Provide(
-		router.NewRouter, NewServer,
+		router.NewRouter,
 	),
-	InvokeFunc: Invoke,
-	Constructor: func(server *http.Server) Server {
-		return server
+	Constructor: func(e *echo.Echo, logger *zap.Logger, getter dependency.ConfigGetter) WebServer {
+		//e.Debug = true
+		e.Use(echoMw.Recover())
+
+		e.Server.Addr = fmt.Sprintf("%s:%d", getter.GetString("http-host"), getter.GetInt("http-port"))
+
+		return &server{e, logger}
 	},
+	InvokeFunc: Invoke,
 }
 
-// New creates a new instance of the *http.Server configured by the config
-// you decided
-func NewServer(router http.Handler, getter dependency.ConfigGetter) *http.Server {
-	return &http.Server{
-		Addr:              fmt.Sprintf("%s:%d", getter.GetString("http-host"), getter.GetInt("http-port")),
-		Handler:           router,
-		ReadTimeout:       getter.GetDuration("read-timeout"),
-		ReadHeaderTimeout: getter.GetDuration("read-header-timeout"),
-		WriteTimeout:      getter.GetDuration("write-timeout"),
-		IdleTimeout:       getter.GetDuration("idle-timeout"),
-		MaxHeaderBytes:    getter.GetInt("max-header-bytes"),
+type (
+	WebServer interface {
+		ListenAndServe() error
+		Shutdown(ctx context.Context) error
 	}
+
+	server struct {
+		echo   *echo.Echo
+		logger *zap.Logger
+	}
+)
+
+func (ws *server) ListenAndServe() error {
+	ws.logger.Info("Starting HTTP Server", zap.String("Addr", ws.echo.Server.Addr))
+	if err := graceful.ListenAndServe(ws.echo.Server, 5*time.Second); err != nil {
+		ws.logger.Error("Could not start Server", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+func (ws *server) Shutdown(ctx context.Context) error {
+	ws.logger.Info("Stopping HTTP Server")
+	return ws.echo.Shutdown(ctx)
 }
 
 // Params are the dependencies required to start the http
@@ -53,7 +72,7 @@ type Params struct {
 	fx.In
 
 	Lifecycle fx.Lifecycle
-	Server    Server
+	Server    WebServer
 	Logger    *zap.Logger
 }
 
@@ -65,18 +84,11 @@ func Invoke(params Params) {
 	})
 }
 
-// Server is an interface that abstracts the *http.Server
-type Server interface {
-	ListenAndServe() error
-	Shutdown(ctx context.Context) error
-}
-
 // StartServer creates a closure that will start the http when called
-func StartServer(server Server, logger *zap.Logger) func(ctx context.Context) error {
+func StartServer(s WebServer, logger *zap.Logger) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
-		logger.Info("Starting HTTP Server")
 		go func() {
-			if err := graceful.ListenAndServe(server.(*http.Server), 5*time.Second); err != nil {
+			if err := s.ListenAndServe(); err != nil {
 				logger.Error("Could not start Server", zap.Error(err))
 			}
 		}()
@@ -84,12 +96,10 @@ func StartServer(server Server, logger *zap.Logger) func(ctx context.Context) er
 	}
 }
 
-// StopServer creates a closure that will stop the http
-func StopServer(server Server, logger *zap.Logger) func(ctx context.Context) error {
+func StopServer(s WebServer, logger *zap.Logger) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
-		logger.Info("Stopping HTTP Server")
-		if err := server.Shutdown(context.Background()); err != nil {
-			logger.Error("Error when shutting down Server")
+		if err := s.Shutdown(context.Background()); err != nil {
+			logger.Error("Error when shutting down Server", zap.Error(err))
 			return fmt.Errorf("error shutting down Server (%w)", err)
 		}
 		return nil
