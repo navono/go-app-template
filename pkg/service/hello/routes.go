@@ -29,6 +29,7 @@ func RegisterHandler(params HandlerParams) router.Module {
 	return router.Module{
 		Method: http.MethodGet,
 		Path:   "/hello",
+		// Also, we can use normal request handler
 		HandlerFunc: echo.WrapHandler(
 			kitHttp.NewServer(
 				makeHelloEndpoint(params.HelloService),
