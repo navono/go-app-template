@@ -1,0 +1,11 @@
+host: localhost:8080
+info:
+  contact:
+    email: navono007@gmail.com
+    name: Qi
+  description: go-app API doc
+  license: {}
+  title: go-app API
+  version: "0.1"
+paths: {}
+swagger: "2.0"

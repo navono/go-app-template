@@ -1,4 +1,8 @@
-.PHONY: build
+.PHONY: build swag
 
 build:
-	go build -race -o go-app.exe -gcflags "all=-N -l" ./cmd/main.go
+	go build -race -o ./bin/go-app.exe -gcflags "all=-N -l" ./main.go
+
+swag:
+	swag i --dir ./
+

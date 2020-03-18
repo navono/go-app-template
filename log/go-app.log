@@ -1,0 +1,2 @@
+2020-03-18T11:28:01.751+0800	info	logging/log.go:41	Process environment	{"app-name": "___debug.exe", "app-version": "dev", "environment": "test", "app-version": "dev", "pid": 7404}
+2020-03-18T11:28:01.752+0800	info	http/server.go:77	Starting HTTP Server	{"app-name": "___debug.exe", "app-version": "dev", "environment": "test"}

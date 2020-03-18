@@ -1,0 +1,15 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "go-app API doc",
+        "title": "go-app API",
+        "contact": {
+            "name": "Qi",
+            "email": "navono007@gmail.com"
+        },
+        "license": {},
+        "version": "0.1"
+    },
+    "host": "localhost:8080",
+    "paths": {}
+}
