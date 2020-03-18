@@ -1,8 +1,6 @@
 package hello
 
 import (
-	"net/http"
-
 	"go-app-template/pkg/transport/http/router"
 
 	kitHttp "github.com/go-kit/kit/transport/http"
@@ -27,14 +25,16 @@ type HandlerParams struct {
 
 func RegisterHandler(params HandlerParams) router.Module {
 	return router.Module{
-		Method: http.MethodGet,
-		Path:   "/hello",
-		// Also, we can use normal request handler
-		HandlerFunc: echo.WrapHandler(
-			kitHttp.NewServer(
-				makeHelloEndpoint(params.HelloService),
-				decodeHelloRequest,
-				encodeResponse,
-				params.Options...)),
+		Router: func(e *echo.Echo) {
+			g := e.Group("hello")
+
+			// Also, we can use normal request handler
+			g.GET("/", echo.WrapHandler(
+				kitHttp.NewServer(
+					makeHelloEndpoint(params.HelloService),
+					decodeHelloRequest,
+					encodeResponse,
+					params.Options...)))
+		},
 	}
 }

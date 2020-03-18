@@ -19,7 +19,7 @@ var doc = `{
         "description": "{{.Description}}",
         "title": "{{.Title}}",
         "contact": {
-            "name": "Qi",
+            "name": "Xing",
             "email": "navono007@gmail.com"
         },
         "license": {},

@@ -13,7 +13,7 @@ import (
 // @version 0.1
 // @description go-app API doc
 
-// @contact.name Qi
+// @contact.name Xing
 // @contact.email navono007@gmail.com
 
 // @host localhost:8080

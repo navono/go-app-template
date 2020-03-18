@@ -2,7 +2,7 @@ host: localhost:8080
 info:
   contact:
     email: navono007@gmail.com
-    name: Qi
+    name: Xing
   description: go-app API doc
   license: {}
   title: go-app API

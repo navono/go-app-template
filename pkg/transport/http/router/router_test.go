@@ -14,6 +14,7 @@ import (
 	"go-app-template/pkg/transport/http/router"
 
 	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )
@@ -24,8 +25,9 @@ func (p PrinterFunc) Printf(string, ...interface{}) {}
 
 func TestNew(t *testing.T) {
 	module := router.Module{
-		Path:   "test",
-		Router: func(router *mux.Router) {},
+		//Path:   "test",
+		//Router: func(router *mux.Router) {},
+		Router: func(e *echo.Echo) {},
 	}
 	cmd := &cobra.Command{}
 	annotated := fx.Annotated{
@@ -36,8 +38,9 @@ func TestNew(t *testing.T) {
 	}
 
 	module2 := router.Module{
-		Path:   "/test2",
-		Router: func(router *mux.Router) {},
+		//Path:   "/test2",
+		//Router: func(router *mux.Router) {},
+		Router: func(e *echo.Echo) {},
 	}
 
 	annotated2 := fx.Annotated{

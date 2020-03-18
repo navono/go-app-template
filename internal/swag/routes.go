@@ -1,10 +1,9 @@
 package swag
 
 import (
-	"net/http"
-
 	"go-app-template/pkg/transport/http/router"
 
+	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"go.uber.org/fx"
 )
@@ -18,8 +17,8 @@ var Module = fx.Provide(
 
 func RegisterSwagHandler() router.Module {
 	return router.Module{
-		Method:      http.MethodGet,
-		Path:        "/swagger/*",
-		HandlerFunc: echoSwagger.WrapHandler,
+		Router: func(e *echo.Echo) {
+			e.GET("/swagger/*", echoSwagger.WrapHandler)
+		},
 	}
 }

@@ -7,10 +7,11 @@ import (
 	"go.uber.org/fx"
 )
 
-type Module struct {
-	Method, Path string
-	HandlerFunc  echo.HandlerFunc
-}
+type (
+	Module struct {
+		Router func(e *echo.Echo)
+	}
+)
 
 // Params are the parameters required to build the router
 type Params struct {
@@ -25,7 +26,7 @@ type Params struct {
 func NewRouter(params Params) *echo.Echo {
 	e := echo.New()
 	for _, module := range params.Modules {
-		e.Add(module.Method, module.Path, module.HandlerFunc)
+		module.Router(e)
 	}
 
 	e.Use(params.Middlewares...)
