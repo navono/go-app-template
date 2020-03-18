@@ -1,8 +1,6 @@
 package router
 
 import (
-	"go-app-template/internal/response"
-
 	"github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 )
@@ -17,9 +15,8 @@ type (
 type Params struct {
 	fx.In
 
-	ResponseProvider response.ResponderProvider
-	Modules          []Module              `group:"http"`
-	Middlewares      []echo.MiddlewareFunc `group:"middleware"`
+	Modules     []Module              `group:"http"`
+	Middlewares []echo.MiddlewareFunc `group:"middleware"`
 }
 
 // New creates a new instance of a *mux.Router with all of the modules added
