@@ -5,7 +5,7 @@ import (
 	"go-app-template/internal/dependency"
 	"go-app-template/internal/gokitOptions"
 	"go-app-template/internal/middleware"
-	"go-app-template/internal/swag"
+	"go-app-template/internal/swagger"
 	"go-app-template/pkg/service/hello"
 
 	"github.com/spf13/cobra"
@@ -36,7 +36,7 @@ func Serve(builder dependency.Builder) func(cmd *cobra.Command, args []string) {
 		builder.
 			WithModule(middleware.Module).
 			WithModule(gokitOptions.Module).
-			WithModule(swag.Module).
+			WithModule(swagger.Module).
 			WithModule(hello.Module).
 			Build().
 			Run()

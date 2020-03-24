@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
+	helloPb "go-app-template/api"
+
 	"github.com/go-kit/kit/endpoint"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -13,16 +15,7 @@ import (
 
 type (
 	ServiceInterface interface {
-		Hello(string) (string, error)
-	}
-
-	helloRequest struct {
-		S string `json:"s"`
-	}
-
-	helloResponse struct {
-		V   string `json:"v"`
-		Err string `json:"err,omitempty"`
+		Hello(request helloPb.Request) (helloPb.Response, error)
 	}
 
 	HelloService struct {
@@ -45,33 +38,34 @@ func NewHelloService(log *zap.Logger) *HelloService {
 // @Tags hello
 // @Accept  octet-stream
 // @Produce octet-stream
-// @Param   req body string false "string enums"
-// @Success 200 {object} string
+// @Param   req body Request true "Request"
+// @Success 200 {object} Response
 // @Router  /hello [get]
-func (h *HelloService) Hello(s string) (string, error) {
-	if s == "" {
-		return "", ErrEmpty
+func (h *HelloService) Hello(req helloPb.Request) (helloPb.Response, error) {
+	if req.Name == "" {
+		return helloPb.Response{
+			Greeting: "Hello, nobody",
+		}, ErrEmpty
 	}
 
-	return fmt.Sprintf("Hello %s", s), nil
+	return helloPb.Response{
+		Greeting: fmt.Sprintf("Hello %s", req.Name),
+	}, nil
 }
 
 func makeHelloEndpoint(svc ServiceInterface) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(helloRequest)
-		v, err := svc.Hello(req.S)
+		req := request.(helloPb.Request)
+		rsp, err := svc.Hello(req)
 		if err != nil {
-			return helloResponse{
-				V:   v,
-				Err: err.Error(),
-			}, nil
+			return nil, err
 		}
-		return helloResponse{v, ""}, nil
+		return rsp, nil
 	}
 }
 
 func decodeHelloRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var request helloRequest
+	var request helloPb.Request
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, errors.Wrap(err, "decodeHelloRequest failed")
 	}

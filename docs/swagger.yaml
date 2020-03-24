@@ -1,3 +1,14 @@
+definitions:
+  hello.Request:
+    properties:
+      name:
+        type: string
+    type: object
+  hello.Response:
+    properties:
+      greeting:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -14,18 +25,19 @@ paths:
       - application/octet-stream
       description: this is description
       parameters:
-      - description: string enums
+      - description: Request
         in: body
         name: req
+        required: true
         schema:
-          type: string
+          $ref: '#/definitions/hello.Request'
       produces:
       - application/octet-stream
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/string'
+            $ref: '#/definitions/hello.Response'
       summary: Say Hello
       tags:
       - hello

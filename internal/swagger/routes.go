@@ -1,4 +1,4 @@
-package swag
+package swagger
 
 import (
 	"go-app-template/pkg/transport/http/router"
