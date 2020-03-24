@@ -43,11 +43,12 @@ var doc = `{
                 "summary": "Say Hello",
                 "parameters": [
                     {
-                        "description": "string enums",
+                        "description": "Request",
                         "name": "req",
                         "in": "body",
+                        "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/hello.Request"
                         }
                     }
                 ],
@@ -55,9 +56,27 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/string"
+                            "$ref": "#/definitions/hello.Response"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "hello.Request": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "hello.Response": {
+            "type": "object",
+            "properties": {
+                "greeting": {
+                    "type": "string"
                 }
             }
         }
